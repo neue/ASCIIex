@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>ASCII Converter</title>
+	<script src="node_modules/p5/lib/p5.js"></script>
+  <script src="node_modules/p5/lib/addons/p5.dom.js"></script>
+  <script src="libraries/p5.gif.min.js"></script>
+	<script src="init.js"></script>
+	<style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+		html,body{
+      margin:0;padding:0;
+      background: #000;
+      font: 17px "Menlo";
+      color: #fff;
+    }
+    canvas { 
+      position:fixed; 
+      top:0; 
+      left:0; 
+      z-index:1;
+    }
+    #tools {
+      position: fixed;
+      top: 0px;
+      right: 0px;
+
+      display: block;
+    }
+    #tools a {
+      padding: 10px 20px 10px 20px;
+      margin: 20px;
+      color: #fff;
+      background-color: #70B53B;
+      border: none;
+      border-radius: 5px;
+      display: block;
+      text-decoration: none;
+    }
+    #tools a:hover {
+      background-color: #92CF43;
+    }
+	</style>
+</head>
+<body>
+  <div id="tools"></div>
+</body>
+</html>
