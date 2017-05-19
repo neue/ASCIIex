@@ -8,21 +8,13 @@ var dataUri;
 var asciiFrames = [];
 var gifProcessed = false;
 var brightnessMap = [" ",".",",","•","*","%","@","O","X","⌷"];
-var colorkeys = {
-  '000000': '&nbsp;',
-  '001100': '.',
-  '002200': '-',
-  '003400': '/',
-  '00FF00': '|',
-  'FF0000': 'X'
-};
-
+var dictionary = dictYourComputer;
 
 function setup() {
   createCanvas(1,1);
   frameRate(20);
   pixelDensity(2);
-  gif = loadGif('yourcpu.gif');
+  gif = loadGif('ComputerPlug.gif');
   ascii = createElement('pre','');
 }
 
@@ -49,49 +41,53 @@ function processGIF() {
     asciiFrames.push(processASCII(gif));
   }
   gifProcessed = true;
-  var jsonString = JSON.stringify(asciiFrames);
-  dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(jsonString);
-  exportButton = createA(dataUri,'Export');
-  exportButton.attribute("download", "ASCIIAnim.json");
-  
-  exportButton.parent("tools");
-  exportButton.mouseReleased(exportJSON);
-  
+  generateExport();
   console.log("😁 DONE");  
 }
 
 
 function processASCII(frame) {
-  var asciistring = "";
+  var lines = [];
   if (mode == 0) {    
     //
     // Brightness Mode
     //
     for (var y = 0; y < frame.height; y++) {
+      lines[y] = "";
       for (var x = 0; x < frame.width; x++) {
         var brightnum = Math.floor(brightness(frame.get(x,y))/10) - 1;
         if (brightnum == -1) {brightnum = 0;}
-        asciistring += brightnessMap[brightnum];
+        lines[y] += brightnessMap[brightnum];
       }
-      asciistring += "<br>";
     }
   } else {
     //
     // Mapping Mode
     //
+    
     for (var y = 0; y < frame.height; y++) {
+      lines[y] = "";
       for (var x = 0; x < frame.width; x++) {
         var hexValue = hex(frame.get(x,y)[0],2).toString() + 
                        hex(frame.get(x,y)[1],2).toString() +
                        hex(frame.get(x,y)[2],2).toString();
-        asciistring += colorkeys[hexValue];
+        if (dictionary[hexValue][1]) {
+          lines[y] += "<font color='"+dictionary[hexValue][1]+"'>"+dictionary[hexValue][0]+"</font>";
+        } else {
+          lines[y] += dictionary[hexValue][0]; 
+        }
       }
-      asciistring += "\n";
-    }    
+    }
   }
-  return asciistring;
-}
 
+  // Remove trailing whitespace
+  for(var y = 0; y < lines.length; y++){
+    while(lines[y].endsWith("&nbsp;")){
+      lines[y] = lines[y].substr(0,lines[y].length - 6);
+    }
+  }
+  return lines.join("<br>");
+}
 
 
 function nextFrame() { currentFrame = (currentFrame+1) % asciiFrames.length; }
@@ -112,6 +108,19 @@ function keyPressed() {
 
 
 
-function exportJSON() {
-  console.log(jsonString);
+var exportFile = "";
+function generateExport() {
+  // var jsonString = JSON.stringify(asciiFrames);
+  exportFile += 'var frames = [';
+  for (var i = 0; i < asciiFrames.length; i++) {
+    exportFile += 'qsTr("'+asciiFrames[i]+'"),';
+    if (i == asciiFrames.length-1) {
+      exportFile += 'qsTr("'+asciiFrames[i]+'")';
+    }
+  }
+  exportFile += '];';
+  dataUri = 'data:text/plain;charset=utf-8,'+ encodeURIComponent(exportFile);
+  exportButton = createA(dataUri,'Export');
+  exportButton.attribute("download", "ASCIIAnim.js");
+  exportButton.parent("tools");
 }
