@@ -8,13 +8,13 @@ var dataUri;
 var asciiFrames = [];
 var gifProcessed = false;
 var brightnessMap = [" ",".",",","•","*","%","@","O","X","⌷"];
-var dictionary = dictYourComputer;
+var dictionary = dictPong;
 
 function setup() {
   createCanvas(1,1);
   frameRate(20);
   pixelDensity(2);
-  gif = loadGif('ComputerPlug.gif');
+  gif = loadGif('Pong.gif');
   ascii = createElement('pre','');
 }
 
@@ -71,6 +71,9 @@ function processASCII(frame) {
         var hexValue = hex(frame.get(x,y)[0],2).toString() + 
                        hex(frame.get(x,y)[1],2).toString() +
                        hex(frame.get(x,y)[2],2).toString();
+         if (!dictionary[hexValue]) {
+           console.log(hexValue);
+         }
         if (dictionary[hexValue][1]) {
           lines[y] += "<font color='"+dictionary[hexValue][1]+"'>"+dictionary[hexValue][0]+"</font>";
         } else {
